@@ -15,72 +15,83 @@
 /* ============================================================
    TAG RENDERING – FRONT
    ------------------------------------------------------------
-   normal tags   -> #tagContainer
-   qt* (prefix)  -> #qtContainer (above question)
-   ::at (suffix) -> hidden on front
-   hid* (prefix) -> never shown
+   normal tags    -> #tagContainer
+   qt* (prefix)   -> #qtContainer (above question)
+   ::at (suffix)  -> hidden on front
+   hid* (prefix)  -> never shown
+   leech          -> always shown FIRST (special color)
 ============================================================ */
 
 (() => {
   const tagSourceEl = document.getElementById("tagSource");
   const normalEl = document.getElementById("tagContainer");
   const qtEl = document.getElementById("qtContainer");
+
   if (!tagSourceEl || !normalEl || !qtEl) return;
 
   const raw = (tagSourceEl.textContent || "").trim();
   if (!raw) return;
 
-  // Prefix rules apply to the LAST hierarchy segment (same as before).
   const PREFIX = {
     qt:  /^qt(?:[:\-_ ]+|$)/i,
     hid: /^hid(?:[:\-_ ]+|$)/i
   };
 
-  const stripPrefix = (s) => s.replace(/^(qt|hid)(?:[:\-_ ]+|$)/i, "").trim();
+  const stripPrefix = (s) =>
+    s.replace(/^(qt|hid)(?:[:\-_ ]+|$)/i, "").trim();
 
   const tokens = raw.split(/\s+/).filter(Boolean);
 
-  const normal = [];
-  const qt = [];
+  const normal = []; // {label, type}
+  const qt = [];     // {label, type}
 
   for (const token of tokens) {
     const parts = token.split("::").filter(Boolean);
     if (!parts.length) continue;
 
-    const last = parts[parts.length - 1];
+    const lastRaw = parts[parts.length - 1];
+    const last = lastRaw.toLowerCase();
 
-    // hid prefix => never show
-    if (PREFIX.hid.test(last)) continue;
-
-    // qt prefix => question tags (display label = last segment without prefix)
-    if (PREFIX.qt.test(last)) {
-      const label = stripPrefix(last).replace(/_/g, " ");
-      if (label) qt.push(label);
+    // --- Special: leech tag (always visible, ALWAYS FIRST) ---
+    if (last === "leech") {
+      normal.unshift({ label: "leech", type: "leech" });
       continue;
     }
 
-    // ::at suffix => answer-only tag; ignore on front
-    if (last.toLowerCase() === "at") continue;
+    // --- hid prefix on last segment => never show anywhere ---
+    if (PREFIX.hid.test(lastRaw)) continue;
 
-    // normal tag: display last hierarchy segment
-    const label = last.replace(/_/g, " ").trim();
-    if (label) normal.push(label);
+    // --- qt prefix on last segment => show above question ---
+    if (PREFIX.qt.test(lastRaw)) {
+      const label = stripPrefix(lastRaw).replace(/_/g, " ");
+      if (label) qt.push({ label, type: "question" });
+      continue;
+    }
+
+    // --- ::at suffix => answer-only tag; hide on front ---
+    if (last === "at") continue;
+
+    // --- normal tag => show last segment ---
+    const label = lastRaw.replace(/_/g, " ").trim();
+    if (label) normal.push({ label, type: "normal" });
   }
 
-  const addPills = (container, labels, type) => {
-    if (!labels.length) return;
+  const addPills = (container, items) => {
+    if (!items.length) return;
     const frag = document.createDocumentFragment();
-    for (const label of labels) {
+
+    for (const item of items) {
       const el = document.createElement("div");
-      el.className = `tags tags--${type}`;
-      el.textContent = label;
+      el.className = `tags tags--${item.type}`;
+      el.textContent = item.label;
       frag.appendChild(el);
     }
+
     container.appendChild(frag);
   };
 
-  addPills(normalEl, normal, "normal");
-  addPills(qtEl, qt, "question");
+  addPills(normalEl, normal);
+  addPills(qtEl, qt);
 
   if (!normalEl.children.length) normalEl.style.display = "none";
   if (!qtEl.children.length) qtEl.style.display = "none";

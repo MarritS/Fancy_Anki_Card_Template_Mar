@@ -142,6 +142,11 @@ body {
   color: #ffffff;
 }
 
+.tags--leech {
+  background-color: #b30000;  /* strong warning red */
+  color: #ffffff;
+}
+
 .tags:empty { display: none; }
 
 /* CARD BLOCKS */
