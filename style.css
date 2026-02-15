@@ -1,13 +1,5 @@
 /* =========================================================
-   ANKI THEME – CLEAN LIGHT/DARK FOUNDATION
-   ---------------------------------------------------------
-   Goals:
-   1) All colors come from CSS variables
-   2) Light mode = :root variables
-   3) Dark mode = .nightMode overrides (Anki toggles this)
-   4) Outer background = --bg-main
-      Card container background = --bg-card
-      Inner cards background = --bg-soft
+   ANKI THEME – CLEAN LIGHT/DARK (NO HOVER SYSTEM)
 ========================================================= */
 
 
@@ -27,27 +19,19 @@
 
   --border-main: #d0d5e2;
 
-  --hover-bg: #0a0e1f;
-  --hover-text: #ffffff;
-
-  /* Tag text is separate so you can tune readability */
   --tag-text: #ffffff;
 
-  /* Optional “Deck Options” variable (keep once, not 4x) */
+  --font-main: Poppins, Arial, sans-serif;
+
   --deckOptionsCss-TagColor: var(--tag-text);
 }
 
 
 /* =========================================================
-   THEME TOKENS (DARK MODE OVERRIDE)
-   ---------------------------------------------------------
-   Anki typically adds `.nightMode` to <body>.
-   Some versions attach it to <html> as well, so we cover both.
+   DARK MODE OVERRIDE
 ========================================================= */
 
-.nightMode,
-html.nightMode,
-body.nightMode {
+.nightMode {
   --bg-main: #05040f;
   --bg-card: #0a0e1f;
   --bg-soft: #11182a;
@@ -59,9 +43,6 @@ body.nightMode {
 
   --border-main: rgba(250, 253, 253, 0.35);
 
-  --hover-bg: #fafdfd;
-  --hover-text: #0a0e1f;
-
   --tag-text: #fafdfd;
 
   --deckOptionsCss-TagColor: var(--tag-text);
@@ -69,9 +50,7 @@ body.nightMode {
 
 
 /* =========================================================
-   BASE RESET (SAFE)
-   ---------------------------------------------------------
-   Keep resets minimal; aggressive resets can break Anki UI.
+   BASE
 ========================================================= */
 
 * {
@@ -83,14 +62,12 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  font-family: var(--font-main);
 }
 
 
 /* =========================================================
-   OUTER APP BACKGROUNDS (ANKI SHELL)
-   ---------------------------------------------------------
-   These selectors target Anki's outer containers so the area
-   outside your cards uses --bg-main in both themes.
+   OUTER ANKI SHELL BACKGROUND
 ========================================================= */
 
 html,
@@ -106,7 +83,7 @@ body,
 
 
 /* =========================================================
-   YOUR CARD LAYOUT CONTAINERS
+   CARD CONTAINER
 ========================================================= */
 
 .card-container {
@@ -131,113 +108,10 @@ img {
 
 
 /* =========================================================
-   NAVBAR / TOP UI (ANKIWEB / SOME CLIENTS)
-   ---------------------------------------------------------
-   Note: targeting hashed Svelte classes is fragile.
-   We keep it but isolate it here so it’s easy to delete later.
-========================================================= */
-
-.navbar,
-.bg-gray.svelte-uhvvkf.svelte-uhvvkf {
-  display: flex;
-  align-items: center;
-  background-color: var(--bg-main);
-  border-bottom: 4px solid var(--border-main);
-}
-
-.align-middle {
-  color: var(--text-main);
-}
-
-.navbar-nav {
-  margin: 0;
-}
-
-.navbar .container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-}
-
-.nav-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 7.5px 16px;
-  margin: 8px;
-  border-radius: 16px;
-
-  background-color: var(--bg-soft);
-  color: var(--text-main);
-
-  font-family: Poppins, Arial, sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-
-  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.nav-link {
-  color: inherit !important;
-}
-
-.nav-item:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-  color: var(--hover-text);
-}
-
-
-/* =========================================================
-   STUDY MENUS
-========================================================= */
-
-.float-start,
-.float-end {
-  display: flex;
-  align-items: center;
-  width: 50%;
-}
-
-.float-start { justify-content: flex-end; }
-.float-end { justify-content: flex-start; }
-
-.float-start .btn-outline-primary,
-.float-end .count {
-  padding: 7.5px 14px;
-  margin: 8px;
-  height: 28px;
-  border-radius: 16px;
-
-  background-color: var(--bg-soft);
-  color: var(--text-main);
-
-  font-family: Arial, sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-
-  cursor: pointer;
-  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.float-start .btn-outline-primary:hover,
-.float-end .count:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-  color: var(--hover-text);
-}
-
-
-/* =========================================================
    ANSWER BAR
 ========================================================= */
 
-#ansarea,
-#ansarea.svelte-1s4vml8,
-#ansarea.svelte-192a69y {
+#ansarea {
   margin: 0;
   background-color: var(--bg-main);
   border-top: 4px solid var(--border-main);
@@ -264,12 +138,9 @@ td {
   height: 40px;
   border-radius: 16px;
 
-  font-family: Poppins, Arial, sans-serif;
   font-weight: 700;
   font-size: 13px;
   text-transform: uppercase;
-
-  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-primary {
@@ -282,21 +153,9 @@ td {
   color: var(--text-main);
 }
 
-.btn-primary:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-  color: var(--bg-accent);
-}
-
-.btn-secondary:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-  color: var(--hover-text);
-}
-
 
 /* =========================================================
-   CARD CONTENT BLOCKS
+   CARD CONTENT
 ========================================================= */
 
 .front-card,
@@ -307,8 +166,6 @@ td {
 
   background-color: var(--bg-soft) !important;
   color: var(--text-main);
-
-  font-family: Poppins, Arial, sans-serif;
 }
 
 .front-card {
@@ -321,19 +178,9 @@ td {
   font-weight: 300;
 }
 
-/* Inherit colors for content inside the card blocks */
 .front-card *,
 .common-card * {
   color: inherit;
-}
-
-/* Hover effect */
-.front-card:hover,
-.front-card:hover *,
-.common-card:hover,
-.common-card:hover * {
-  background-color: var(--hover-bg) !important;
-  color: var(--hover-text);
 }
 
 
@@ -349,18 +196,9 @@ td {
   background-color: var(--bg-accent);
   color: var(--deckOptionsCss-TagColor);
 
-  font-family: Poppins, Arial, sans-serif;
   font-weight: 700;
   font-size: 13px;
   text-transform: uppercase;
-
-  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.tags:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-  color: var(--bg-accent);
 }
 
 .tags:empty {
@@ -406,13 +244,6 @@ td {
 ========================================================= */
 
 @media (max-width: 992px) {
-  .float-end { display: none; }
-
-  .float-start {
-    width: 100%;
-    justify-content: center;
-  }
-
   .card-container {
     width: 90%;
     margin: 16px auto;
