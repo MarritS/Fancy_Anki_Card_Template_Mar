@@ -108,11 +108,26 @@ body {
 .tags {
   padding: 7.5px var(--space-2);
   border-radius: var(--radius-md);
-  background-color: var(--bg-accent);
   color: var(--deckOptionsCss-TagColor);
   font-size: var(--fs-tag);
   font-weight: var(--fw-strong);
   text-transform: uppercase;
+}
+
+/* Default tags (normal) */
+.tags--normal {
+  background-color: var(--bg-accent);
+}
+
+/* Question tags (qt) */
+.tags--question {
+  background-color: #d46e6a; /* example blue */
+}
+
+/* Answer tags (at) */
+.tags--answer {
+  background-color: #6b1a1a; /* example deep red */
+  color: #ffffff;
 }
 
 .tags:empty { display: none; }

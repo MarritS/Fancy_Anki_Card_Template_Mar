@@ -1,106 +1,98 @@
-<!-- =========================================================
-  CARD STRUCTURE
-  -------------------------------------------------------------
-  This is the visible structure of the card.
-
-  - .card-container wraps everything
-  - .tag-container is where processed tags will be inserted
-  - .front-card displays your {{Front}} field
-========================================================= -->
-
 <div class="card-container">
+
+  <!-- Normal (always-visible) tags -->
   <div class="tag-container" id="tagContainer"></div>
-  <div class="front-card">
-    {{Front}}
-  </div>
+
+  <!-- Question tags (qt*) appear directly above the question -->
+  <div class="tag-container tag-container--question" id="qtContainer"></div>
+
+  <div class="front-card">{{Front}}</div>
 </div>
 
-
-<!-- =========================================================
-  HIDDEN TAG SOURCE
-  -------------------------------------------------------------
-  {{Tags}} is provided by Anki as a single string, e.g.:
-
-    "Biology::Cells Easy_Tag Another::Subtag"
-
-  We hide it because we don't want to display the raw tag text.
-  We only use it as input for JavaScript processing.
-========================================================= -->
-
-<span hidden id="tagSource">
-  {{Tags}}
-</span>
-
+<span hidden id="tagSource">{{Tags}}</span>
 
 <script>
 /* ============================================================
-   TAG PROCESSING SCRIPT
+   TAG RENDERING – FRONT
    ------------------------------------------------------------
-   What this script does:
-
-   1. Reads the raw tag string from {{Tags}}
-   2. Splits it into individual tags
-   3. Removes hierarchical prefixes (keeps only last part after ::)
-   4. Replaces underscores with spaces
-   5. Creates styled tag elements
-   6. Inserts them into .tag-container
-
-   The entire script is wrapped in an IIFE so variables
-   don't leak into the global scope.
+   normal tags  -> #tagContainer
+   qt* tags     -> #qtContainer (above question)
+   at* tags     -> hidden on front
+   hid* tags    -> never shown
 ============================================================ */
 
 (() => {
 
-  // Get references to required elements
   const tagSourceEl = document.getElementById("tagSource");
-  const tagContainerEl = document.getElementById("tagContainer");
+  const normalEl = document.getElementById("tagContainer");
+  const qtEl = document.getElementById("qtContainer");
 
-  // Stop if elements are missing (defensive coding)
-  if (!tagSourceEl || !tagContainerEl) return;
+  if (!tagSourceEl || !normalEl || !qtEl) return;
 
-  // Read raw tag string safely (textContent avoids HTML issues)
   const raw = (tagSourceEl.textContent || "").trim();
-
-  // Stop if there are no tags
   if (!raw) return;
 
-  /* ----------------------------------------------------------
-     PROCESS TAG STRING
+  const PREFIX = {
+    qt:  /^qt(?:[:\-_ ]+|$)/i,
+    at:  /^at(?:[:\-_ ]+|$)/i,
+    hid: /^hid(?:[:\-_ ]+|$)/i
+  };
 
-     raw example:
-       "Biology::Cells Easy_Tag Another::Subtag"
+  const stripPrefix = (s) =>
+    s.replace(/^(qt|at|hid)(?:[:\-_ ]+|$)/i, "");
 
-     Steps:
-       - Split by whitespace
-       - Remove empty entries
-       - Keep last segment after "::"
-       - Replace "_" with " "
-  ---------------------------------------------------------- */
-
-  const tags = raw
+  const parsedTags = raw
     .split(/\s+/)
     .filter(Boolean)
     .map(t => t.split("::").pop())
     .map(t => t.replace(/_/g, " "));
 
-  /* ----------------------------------------------------------
-     CREATE TAG ELEMENTS
+  const normal = [];
+  const qt = [];
 
-     We use a DocumentFragment as a temporary container.
-     This avoids repeated DOM insertions.
-  ---------------------------------------------------------- */
+  for (const tag of parsedTags) {
 
-  const frag = document.createDocumentFragment();
+    if (PREFIX.hid.test(tag)) {
+      // hid* → completely ignored
+      continue;
+    }
 
-  for (const label of tags) {
-    const el = document.createElement("div");
-    el.className = "tags";
-    el.textContent = label;
-    frag.appendChild(el);
+    if (PREFIX.qt.test(tag)) {
+      qt.push(stripPrefix(tag).trim());
+      continue;
+    }
+
+    if (PREFIX.at.test(tag)) {
+      // at* → hidden on front
+      continue;
+    }
+
+    normal.push(tag);
   }
 
-  // Insert all created tags into the visible container
-  tagContainerEl.appendChild(frag);
+  const addPills = (container, labels, type) => {
+    if (!labels.length) return;
+
+    const frag = document.createDocumentFragment();
+
+    for (const label of labels) {
+      if (!label) continue;
+
+      const el = document.createElement("div");
+      el.className = `tags tags--${type}`;
+      el.textContent = label;
+
+      frag.appendChild(el);
+    }
+
+    container.appendChild(frag);
+  };
+
+  addPills(normalEl, normal, "normal");
+  addPills(qtEl, qt, "question");
+
+  if (!normalEl.children.length) normalEl.style.display = "none";
+  if (!qtEl.children.length) qtEl.style.display = "none";
 
 })();
 </script>

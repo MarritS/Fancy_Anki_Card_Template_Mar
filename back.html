@@ -1,149 +1,128 @@
-<!-- =========================================================
-  CARD STRUCTURE (BACK)
-  -------------------------------------------------------------
-  This is the visible layout of the back side:
-
-  - Tag area (filled by JS)
-  - Front shown again
-  - Back answer
-  - Optional sections:
-      Extra (with subtitle + reminder)
-      Hint
-      Source
-========================================================= -->
-
 <div class="card-container">
 
-  <!-- Tags get injected here -->
+  <!-- Normal (always-visible) tags -->
   <div class="tag-container" id="tagContainer"></div>
 
-  <!-- Main content -->
+  <!-- qt* tags above the question -->
+  <div class="tag-container tag-container--question" id="qtContainer"></div>
   <div class="front-card">{{Front}}</div>
+
+  <!-- at* tags above the answer (only shown on back) -->
+  <div class="tag-container tag-container--answer" id="atContainer"></div>
   <div class="common-card">{{Back}}</div>
 
-  <!-- =======================================================
-    OPTIONAL: EXTRA
-    -----------------------------------------------------------
-    Shown only when the Extra field is not empty.
-  ======================================================= -->
   {{#Extra}}
   <div class="common-card">
-    <div class="subtitle" data-lang="extra_title"></div>
-    <div class="reminder" data-lang="extra_reminder">Hoef je niet te onthouden</div>
-		</br>
+    <div class="subtitle">Extra Info</div>
+    <div class="reminder">Hoef je niet te onthouden</div>
     {{Extra}}
   </div>
   {{/Extra}}
 
-  <!-- =======================================================
-    OPTIONAL: HINT
-    -----------------------------------------------------------
-    Shown only when Hint is not empty.
-  ======================================================= -->
   {{#Hint}}
   <div class="common-card">
-    <div class="subtitle" data-lang="hint_title"></div>
+    <div class="subtitle">Ezelsbruggetje</div>
     {{Hint}}
   </div>
   {{/Hint}}
 
-  <!-- =======================================================
-    OPTIONAL: SOURCE
-    -----------------------------------------------------------
-    Shown only when Source is not empty.
-  ======================================================= -->
   {{#Source}}
   <div class="common-card">
-    <div class="subtitle" data-lang="source_title"></div>
+    <div class="subtitle">Bron</div>
     {{Source}}
   </div>
   {{/Source}}
 
 </div>
 
-
-<!-- =========================================================
-  HIDDEN TAG SOURCE
-  -------------------------------------------------------------
-  {{Tags}} comes from Anki as one whitespace-separated string.
-  We keep it hidden and let JS convert it into visible tag pills.
-========================================================= -->
-
 <span hidden id="tagSource">{{Tags}}</span>
-
 
 <script>
 /* ============================================================
-   TAG PROCESSING SCRIPT (BACK)
+   TAG RENDERING – BACK
    ------------------------------------------------------------
-   What this script does:
-
-   1. Reads the raw tag string from {{Tags}}
-   2. Splits it into individual tags
-   3. Keeps only the last part of hierarchical tags (after ::)
-   4. Replaces underscores with spaces
-   5. Creates <div class="tags"> elements for each tag
-   6. Inserts them into #tagContainer
-
-   Using textContent (instead of innerHTML) prevents any
-   accidental HTML interpretation and is safer.
+   normal tags  -> #tagContainer
+   qt* tags     -> #qtContainer (above question)
+   at* tags     -> #atContainer (above answer)
+   hid* tags    -> never shown
 ============================================================ */
 
 (() => {
-  const tagSourceEl = document.getElementById("tagSource");
-  const tagContainerEl = document.getElementById("tagContainer");
 
-  if (!tagSourceEl || !tagContainerEl) return;
+  const tagSourceEl = document.getElementById("tagSource");
+  const normalEl = document.getElementById("tagContainer");
+  const qtEl = document.getElementById("qtContainer");
+  const atEl = document.getElementById("atContainer");
+
+  if (!tagSourceEl || !normalEl || !qtEl || !atEl) return;
 
   const raw = (tagSourceEl.textContent || "").trim();
   if (!raw) return;
 
-  const tags = raw
+  const PREFIX = {
+    qt:  /^qt(?:[:\-_ ]+|$)/i,
+    at:  /^at(?:[:\-_ ]+|$)/i,
+    hid: /^hid(?:[:\-_ ]+|$)/i
+  };
+
+  const stripPrefix = (s) =>
+    s.replace(/^(qt|at|hid)(?:[:\-_ ]+|$)/i, "");
+
+  const parsedTags = raw
     .split(/\s+/)
     .filter(Boolean)
     .map(t => t.split("::").pop())
     .map(t => t.replace(/_/g, " "));
 
-  const frag = document.createDocumentFragment();
+  const normal = [];
+  const qt = [];
+  const at = [];
 
-  for (const label of tags) {
-    const el = document.createElement("div");
-    el.className = "tags";
-    el.textContent = label;
-    frag.appendChild(el);
+  for (const tag of parsedTags) {
+
+    if (PREFIX.hid.test(tag)) {
+      // hid* → completely ignored
+      continue;
+    }
+
+    if (PREFIX.qt.test(tag)) {
+      qt.push(stripPrefix(tag).trim());
+      continue;
+    }
+
+    if (PREFIX.at.test(tag)) {
+      at.push(stripPrefix(tag).trim());
+      continue;
+    }
+
+    normal.push(tag);
   }
 
-  tagContainerEl.appendChild(frag);
-})();
-</script>
+  const addPills = (container, labels, type) => {
+    if (!labels.length) return;
 
-<script>
-(() => {
-  // Try to detect preferred language (usually browser/app UI language)
-  const lang =
-    (navigator.languages && navigator.languages[0]) ||
-    navigator.language ||
-    "en";
+    const frag = document.createDocumentFragment();
 
-  const isDutch = /^nl\b/i.test(lang);
+    for (const label of labels) {
+      if (!label) continue;
 
-  const strings = isDutch
-    ? {
-        extra_title: "Extra info",
-        extra_reminder: "Hoef je niet te onthouden",
-        hint_title: "Ezelsbruggetje",
-        source_title: "Bron",
-      }
-    : {
-        extra_title: "Extra info",
-        extra_reminder: "No need to memorize",
-        hint_title: "Mnemonic",
-        source_title: "Source",
-      };
+      const el = document.createElement("div");
+      el.className = `tags tags--${type}`;
+      el.textContent = label;
 
-  document.querySelectorAll("[data-lang]").forEach(el => {
-    const key = el.getAttribute("data-lang");
-    if (strings[key]) el.textContent = strings[key];
-  });
+      frag.appendChild(el);
+    }
+
+    container.appendChild(frag);
+  };
+
+  addPills(normalEl, normal, "normal");
+  addPills(qtEl, qt, "question");
+  addPills(atEl, at, "answer");
+
+  if (!normalEl.children.length) normalEl.style.display = "none";
+  if (!qtEl.children.length) qtEl.style.display = "none";
+  if (!atEl.children.length) atEl.style.display = "none";
+
 })();
 </script>
