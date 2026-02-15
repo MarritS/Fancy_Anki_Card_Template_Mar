@@ -41,19 +41,17 @@
 /* ============================================================
    TAG RENDERING – BACK
    ------------------------------------------------------------
-   normal tags  -> #tagContainer
-   qt* tags     -> #qtContainer (above question)
-   at* tags     -> #atContainer (above answer)
-   hid* tags    -> never shown
+   normal tags   -> #tagContainer
+   qt* (prefix)  -> #qtContainer (above question)
+   ::at (suffix) -> #atContainer (above answer)
+   hid* (prefix) -> never shown
 ============================================================ */
 
 (() => {
-
   const tagSourceEl = document.getElementById("tagSource");
   const normalEl = document.getElementById("tagContainer");
   const qtEl = document.getElementById("qtContainer");
   const atEl = document.getElementById("atContainer");
-
   if (!tagSourceEl || !normalEl || !qtEl || !atEl) return;
 
   const raw = (tagSourceEl.textContent || "").trim();
@@ -61,58 +59,56 @@
 
   const PREFIX = {
     qt:  /^qt(?:[:\-_ ]+|$)/i,
-    at:  /^at(?:[:\-_ ]+|$)/i,
     hid: /^hid(?:[:\-_ ]+|$)/i
   };
 
-  const stripPrefix = (s) =>
-    s.replace(/^(qt|at|hid)(?:[:\-_ ]+|$)/i, "");
+  const stripPrefix = (s) => s.replace(/^(qt|hid)(?:[:\-_ ]+|$)/i, "").trim();
 
-  const parsedTags = raw
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(t => t.split("::").pop())
-    .map(t => t.replace(/_/g, " "));
+  const tokens = raw.split(/\s+/).filter(Boolean);
 
   const normal = [];
   const qt = [];
   const at = [];
 
-  for (const tag of parsedTags) {
+  for (const token of tokens) {
+    const parts = token.split("::").filter(Boolean);
+    if (!parts.length) continue;
 
-    if (PREFIX.hid.test(tag)) {
-      // hid* → completely ignored
+    const last = parts[parts.length - 1];
+
+    // hid prefix => never show
+    if (PREFIX.hid.test(last)) continue;
+
+    // qt prefix => question tags
+    if (PREFIX.qt.test(last)) {
+      const label = stripPrefix(last).replace(/_/g, " ");
+      if (label) qt.push(label);
       continue;
     }
 
-    if (PREFIX.qt.test(tag)) {
-      qt.push(stripPrefix(tag).trim());
+    // ::at suffix => answer-only tag
+    if (last.toLowerCase() === "at") {
+      // label comes from the segment before ::at (e.g., Greek_myth::at => Greek myth)
+      const prev = parts.length >= 2 ? parts[parts.length - 2] : "";
+      const label = prev.replace(/_/g, " ").trim();
+      if (label) at.push(label);
       continue;
     }
 
-    if (PREFIX.at.test(tag)) {
-      at.push(stripPrefix(tag).trim());
-      continue;
-    }
-
-    normal.push(tag);
+    // normal tag: display last segment
+    const label = last.replace(/_/g, " ").trim();
+    if (label) normal.push(label);
   }
 
   const addPills = (container, labels, type) => {
     if (!labels.length) return;
-
     const frag = document.createDocumentFragment();
-
     for (const label of labels) {
-      if (!label) continue;
-
       const el = document.createElement("div");
       el.className = `tags tags--${type}`;
       el.textContent = label;
-
       frag.appendChild(el);
     }
-
     container.appendChild(frag);
   };
 
@@ -123,6 +119,5 @@
   if (!normalEl.children.length) normalEl.style.display = "none";
   if (!qtEl.children.length) qtEl.style.display = "none";
   if (!atEl.children.length) atEl.style.display = "none";
-
 })();
 </script>
