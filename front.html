@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Template - nightmode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+</head>
+
+<body>
+  <div class="card-container">
+
+    <!-- Tag container -->
+
+    <div class="tag-container"></div>
+
+    <!-- Cards -->
+
+    <div class="front-card">{{Front}}</div>
+
+  </div>
+  <!-- Element used to get the string of tags -->
+
+  <span hidden id="tagcontent">{{Tags}}</span>
+  <script>
+    // Get the string of tags, turn it into an array, remove :: and  get last tag in the hierarchy //
+    var importTags = document.getElementById('tagcontent').innerHTML;
+    var currentTags = importTags.split(' ').map(function (tags) {
+      return tags.split('::').pop();
+    });
+
+    // Replace underscores with space //
+    var arrayVariable = currentTags;
+
+    for (var i = 0; i < arrayVariable.length; i++) {
+      arrayVariable[i] = arrayVariable[i].replace(/_/g, ' ');
+    };
+
+    // Get the array of tags, create an element for each tag and add it into tag-container //
+    var arrayLength = arrayVariable.length;
+    var temp;
+
+    for (i = 0; i < arrayLength; i++) {
+      temp = document.createElement('div');
+      temp.className = 'tags';
+      temp.innerHTML = arrayVariable[i];
+      document.getElementsByClassName('tag-container')[0].appendChild(temp);
+    };
+  </script>
+</body>
+
+</html>

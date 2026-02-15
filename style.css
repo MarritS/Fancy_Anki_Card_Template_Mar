@@ -1,0 +1,428 @@
+/* ==================================================
+   ANKI CARD THEME – LIGHT / DARK AUTO
+   COMBINED & FIXED
+   ================================================== */
+
+/* -------------------------
+   THEME VARIABLES
+   ------------------------- */
+
+/* LIGHT MODE (default) */
+:root {
+    --bg-main: #f5f6fa;
+    --bg-card: #ffffff;
+    --bg-soft: #e9ecf3;
+    --bg-accent: #179ee0;
+
+    --text-main: #0a0e1f;
+    --text-soft: #3a3f55;
+    --text-invert: #ffffff;
+
+    --border-main: #d0d5e2;
+    --hover-bg: #0a0e1f;
+    --hover-text: #ffffff;
+
+    --tag-text: #ffffff;
+}
+
+/* DARK MODE */
+html.nightMode,
+body.nightMode {
+    --bg-main: #05040F;
+    --bg-card: #0A0E1F;
+    --bg-soft: #11182A;
+    --bg-accent: #179ee0;
+
+    --text-main: #fafdfd;
+    --text-soft: #cfd3e6;
+    --text-invert: #0A0E1F;
+
+    --border-main: #fafdfd;
+    --hover-bg: #fafdfd;
+    --hover-text: #0A0E1F;
+
+    --tag-text: #fafdfd;
+}
+
+
+/* -------------------------
+   FORCE BODY AND CARD BACKGROUND
+   ------------------------- */
+
+/* FORCE CARD TO FILL ENTIRE VIEWPORT */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+		background-color:var(--bg-main) !important;
+    overflow-x: hidden;
+}
+
+.card-container {
+    min-height: 100vh;       /* full viewport height */
+    box-sizing: border-box;
+    padding: 32px;
+    background-color: var(--bg-card) !important;
+		margin-bottom: 24px;
+}
+
+/* -------------------------
+   GLOBAL RESET
+   ------------------------- */
+
+* {
+    box-sizing: border-box;
+    object-fit: contain;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+html {
+    background-color: var(--bg-main) !important;
+}
+
+body {
+    background-color: inherit;
+}
+
+.container {
+    width: auto;
+    max-width: 100%;
+}
+
+/* -------------------------
+   IMAGES
+   ------------------------- */
+
+img {
+    display: flex;
+    justify-content: center;
+    margin: 16px auto;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 16px;
+    background-color: inherit;
+}
+
+/* -------------------------
+   NAVBAR / TOP UI
+   ------------------------- */
+
+.navbar,
+.bg-gray.svelte-uhvvkf.svelte-uhvvkf {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-main);
+    border-bottom: 4px solid var(--border-main);
+}
+
+.align-middle {
+    color: var(--text-main);
+}
+
+.navbar-nav {
+    margin: 0;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    background-color: inherit;
+}
+
+.nav-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 7.5px 16px;
+    margin: 8px;
+    border-radius: 16px;
+    background-color: var(--bg-soft);
+    color: var(--text-main);
+    font-family: Poppins, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-link {
+    color: inherit !important;
+}
+
+.nav-item:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-bg);
+    color: var(--hover-text);
+}
+
+/* -------------------------
+   STUDY MENUS
+   ------------------------- */
+
+.float-start,
+.float-end {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    background-color: inherit;
+}
+
+.float-start {
+    justify-content: flex-end;
+}
+
+.float-end {
+    justify-content: flex-start;
+}
+
+.float-start .btn-outline-primary,
+.float-end .count {
+    padding: 7.5px 14px;
+    margin: 8px;
+    height: 28px;
+    border-radius: 16px;
+    background-color: var(--bg-soft);
+    color: var(--text-main);
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.float-start .btn-outline-primary:hover,
+.float-end .count:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-bg);
+    color: var(--hover-text);
+}
+
+/* -------------------------
+   ANSWER BAR
+   ------------------------- */
+
+#ansarea,
+#ansarea.svelte-1s4vml8,
+#ansarea.svelte-192a69y {
+    margin: 0;
+    background-color: var(--bg-main);
+    border-top: 4px solid var(--border-main);
+}
+
+.text-center,
+td {
+    color: var(--text-main);
+}
+
+/* -------------------------
+   ANSWER BUTTONS
+   ------------------------- */
+
+.btn-primary,
+.btn-secondary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 7.5px 16px;
+    margin: 8px;
+    height: 40px;
+    border-radius: 16px;
+    font-family: Poppins, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--bg-accent);
+    color: var(--text-invert);
+}
+
+.btn-secondary {
+    background-color: var(--bg-soft);
+    color: var(--text-main);
+}
+
+.btn-primary:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-bg);
+    color: var(--bg-accent);
+}
+
+.btn-secondary:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-bg);
+    color: var(--hover-text);
+}
+
+/* -------------------------
+   CARD CONTENT
+   ------------------------- */
+
+.front-card,
+.common-card {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: var(--bg-soft) !important;
+    color: var(--text-main);
+    font-family: Poppins, Arial, sans-serif;
+		margin-bottom: 24px;
+}
+
+.front-card {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.common-card {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.front-card *,
+.common-card * {
+    background-color: inherit;
+    color: inherit;
+}
+
+.front-card:hover,
+.front-card:hover *,
+.common-card:hover,
+.common-card:hover * {
+    background-color: var(--hover-bg) !important;
+    color: var(--hover-text);
+}
+
+/* -------------------------
+   TAGS
+   ------------------------- */
+
+.tags {
+    padding: 7.5px 16px;
+    margin: 8px;
+		margin-bottom: 24px;
+    border-radius: 16px;
+    background-color: var(--bg-accent);
+    color: var(--tag-text);
+    font-family: Poppins, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: transform 0.3s ease;
+}
+
+deckOptionsCss-Options-TagColor: [white: #fafdfd], [weird: #aa7812]
+.tags {
+	color: var(--deckOptionsCss-TagColor);
+}
+
+.tags:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-bg);
+    color: var(--bg-accent);
+}
+
+.tags:empty {
+    display: none;
+}
+
+/* -------------------------
+   HEADERS / EMPHASIS FIX
+   ------------------------- */
+
+.front-card h1,
+.front-card h2,
+.front-card h3,
+.front-card h4,
+.front-card h5,
+.front-card h6,
+.common-card h1,
+.common-card h2,
+.common-card h3,
+.common-card h4,
+.common-card h5,
+.common-card h6,
+.subtitle {
+    font-weight: 700;
+}
+
+.common-card h1 { font-size: 24px; }
+.common-card h2 { font-size: 22px; }
+.common-card h3 { font-size: 20px; }
+.common-card h4 { font-size: 18px; }
+
+/* -------------------------
+   LISTS FIX
+   ------------------------- */
+
+.front-card ul,
+.front-card ol,
+.common-card ul,
+.common-card ol {
+    list-style-position: inside;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.front-card li,
+.common-card li {
+    margin-left: 0;
+    padding-left: 8px;
+}
+
+/* -------------------------
+   MOBILE
+   ------------------------- */
+
+@media (max-width: 992px) {
+
+    .float-end {
+        display: none;
+    }
+
+    .float-start {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-container {
+        width: 90%;
+        margin: 16px auto;
+    }
+}
+
+/* ================================
+   FORCE DARK BACKGROUND OUTSIDE CARD
+   ================================ */
+
+/* Outer containers */
+html, 
+body,
+.card-container,
+.reviewer,
+#qa,
+#qa_box,
+#reviewer,
+.review {
+    background-color: var(--bg-main) !important;
+}
+
+/* Force the card container itself */
+.card-container {
+    background-color: var(--bg-card) !important;
+}
+
+/* Force front/back card areas */
+.front-card,
+.common-card {
+    background-color: var(--bg-soft) !important;
+}
+
+
+
+:root         {--deckOptionsCss-TagColor: #fafdfd;          }:root         {--deckOptionsCss-TagColor: #fafdfd;          }:root         {--deckOptionsCss-TagColor: #fafdfd;          }:root         {--deckOptionsCss-TagColor: #fafdfd;          }
