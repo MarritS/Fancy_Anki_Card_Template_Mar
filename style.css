@@ -1,86 +1,38 @@
-/* =========================================================
-   ANKI THEME – FINAL REFACTORED SYSTEM
-   ---------------------------------------------------------
-   Architecture:
-   1) Explicit light/dark color definitions
-   2) Active theme tokens (used by components)
-   3) Minimal Anki shell styling
-   4) Card components only (no UI button styling)
-========================================================= */
-
-
-/* =========================================================
-   IMPORT FONT
-========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-
-/* =========================================================
-   1) THEME COLOR DEFINITIONS (LIGHT + DARK)
-========================================================= */
-
 :root {
-
-  /* -------------------------
-     LIGHT THEME COLORS
-  ------------------------- */
-
+  /* LIGHT THEME COLORS */
+  --color-bg-main-light: #f5f6fa;
   --color-bg-card-light: #ffffff;
   --color-bg-soft-light: #e9ecf3;
   --color-bg-accent-light: #5e0f0c;
 
+  --color-text-main-light: #0a0e1f;
 
   --color-tag-text-light: #ffffff;
 
-
-  /* -------------------------
-     DARK THEME COLORS (PURE BLACK)
-  ------------------------- */
-
+  /* DARK THEME COLORS */
+  --color-bg-main-dark: #000000;
   --color-bg-card-dark: #000000;
   --color-bg-soft-dark: #222222;
   --color-bg-accent-dark: #5e0f0c;
 
+  --color-text-main-dark: #f5f5f5;
+
   --color-tag-text-dark: #ffffff;
 
-
-  /* =========================================================
-     LIGHT MODE (DEFAULT)
-  ========================================================= */
-
+  /* ACTIVE TOKENS (DEFAULT = LIGHT) */
+  --bg-main: var(--color-bg-main-light);
   --bg-card: var(--color-bg-card-light);
   --bg-soft: var(--color-bg-soft-light);
   --bg-accent: var(--color-bg-accent-light);
 
+  --text-main: var(--color-text-main-light);
+
   --tag-text: var(--color-tag-text-light);
-
   --deckOptionsCss-TagColor: var(--tag-text);
 
-
-/* =========================================================
-   DARK MODE 
-========================================================= */
-
-.nightMode,
-html.nightMode,
-body.nightMode {
-
-  --bg-card: var(--color-bg-card-dark);
-  --bg-soft: var(--color-bg-soft-dark);
-  --bg-accent: var(--color-bg-accent-dark);
-
-  --tag-text: var(--color-tag-text-dark);
-
-  --deckOptionsCss-TagColor: var(--tag-text);
-}
-
-
-
-  /* -------------------------
-     TYPOGRAPHY
-  ------------------------- */
-
+  /* TYPOGRAPHY */
   --font-main: Poppins, Arial, sans-serif;
 
   --fs-front: 24px;
@@ -91,31 +43,33 @@ body.nightMode {
   --fw-common: 300;
   --fw-strong: 700;
 
-
-  /* -------------------------
-     SPACING
-  ------------------------- */
-
+  /* SPACING */
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;
   --space-4: 32px;
 
-
-  /* -------------------------
-     RADIUS
-  ------------------------- */
-
+  /* RADIUS */
   --radius-sm: 8px;
   --radius-md: 16px;
 }
 
+/* DARK MODE SWITCH */
+.nightMode,
+html.nightMode,
+body.nightMode {
+  --bg-main: var(--color-bg-main-dark);
+  --bg-card: var(--color-bg-card-dark);
+  --bg-soft: var(--color-bg-soft-dark);
+  --bg-accent: var(--color-bg-accent-dark);
 
+  --text-main: var(--color-text-main-dark);
 
-/* =========================================================
-   3) BASE + MINIMAL ANKI SHELL BACKGROUND
-========================================================= */
+  --tag-text: var(--color-tag-text-dark);
+  --deckOptionsCss-TagColor: var(--tag-text);
+}
 
+/* BASE + OUTER BACKGROUND */
 * { box-sizing: border-box; }
 
 html,
@@ -126,25 +80,24 @@ body {
   overflow-x: hidden;
 
   font-family: var(--font-main);
+  color: var(--text-main);
+  background-color: var(--bg-main) !important;
 }
 
+#qa {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main);
+}
 
-/* =========================================================
-   4) CARD LAYOUT + COMPONENTS
-========================================================= */
-
+/* CARD CONTAINER */
 .card-container {
   min-height: 100vh;
   padding: var(--space-4);
   margin-bottom: var(--space-3);
-  background-color: var(--bg-card);
+  background-color: var(--bg-card) !important;
 }
 
-
-/* =========================================================
-   TAGS
-========================================================= */
-
+/* TAGS */
 .tag-container {
   display: flex;
   flex-wrap: wrap;
@@ -155,10 +108,8 @@ body {
 .tags {
   padding: 7.5px var(--space-2);
   border-radius: var(--radius-md);
-
   background-color: var(--bg-accent);
   color: var(--deckOptionsCss-TagColor);
-
   font-size: var(--fs-tag);
   font-weight: var(--fw-strong);
   text-transform: uppercase;
@@ -166,17 +117,12 @@ body {
 
 .tags:empty { display: none; }
 
-
-/* =========================================================
-   CARD BLOCKS
-========================================================= */
-
+/* CARD BLOCKS */
 .front-card,
 .common-card {
   padding: var(--space-2);
   margin-bottom: var(--space-3);
   border-radius: var(--radius-sm);
-
   background-color: var(--bg-soft) !important;
   color: var(--text-main);
 }
@@ -196,11 +142,7 @@ body {
   color: inherit;
 }
 
-
-/* =========================================================
-   IMAGES
-========================================================= */
-
+/* IMAGES */
 img {
   display: block;
   margin: var(--space-2) auto;
@@ -209,31 +151,21 @@ img {
   border-radius: var(--radius-md);
 }
 
-
-/* =========================================================
-   HEADERS / SUBTITLES
-========================================================= */
-
+/* HEADERS / SUBTITLES */
 .front-card h1, .front-card h2, .front-card h3, .front-card h4, .front-card h5, .front-card h6,
 .common-card h1, .common-card h2, .common-card h3, .common-card h4, .common-card h5, .common-card h6,
 .subtitle {
   font-weight: var(--fw-strong);
 }
 
-.reminder {
-	font-style: italic;
-}
+.reminder { font-style: italic; }
 
 .common-card h1 { font-size: 24px; }
 .common-card h2 { font-size: 22px; }
 .common-card h3 { font-size: 20px; }
 .common-card h4 { font-size: 18px; }
 
-
-/* =========================================================
-   LISTS
-========================================================= */
-
+/* LISTS */
 .front-card ul, .front-card ol,
 .common-card ul, .common-card ol {
   list-style-position: inside;
@@ -246,11 +178,7 @@ img {
   padding-left: var(--space-1);
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
+/* MOBILE */
 @media (max-width: 992px) {
   .card-container {
     width: 90%;
