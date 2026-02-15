@@ -1,6 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+/* =========================================================
+   SECTION HEADINGS (ENGLISH DEFAULTS)
+   ---------------------------------------------------------
+   Change these values to localize headings without JS.
+========================================================= */
+
 :root {
+	/* LOCALIZATION */
+	--h-extra-title: "Extra info";
+  --h-extra-reminder: "No need to memorize";
+  --h-hint-title: "Mnemonic";
+  --h-source-title: "Source";
+
   /* LIGHT THEME COLORS */
   --color-bg-main-light: #f5f6fa;
   --color-bg-card-light: #ffffff;
@@ -174,6 +186,16 @@ img {
 }
 
 .reminder { font-style: italic; }
+
+/* =========================================================
+   HEADING TEXT INJECTION (NO JS)
+========================================================= */
+
+.subtitle--extra::before  { content: var(--h-extra-title); }
+.reminder--extra::before  { content: var(--h-extra-reminder); }
+
+.subtitle--hint::before   { content: var(--h-hint-title); }
+.subtitle--source::before { content: var(--h-source-title); }
 
 .common-card h1 { font-size: 24px; }
 .common-card h2 { font-size: 22px; }
