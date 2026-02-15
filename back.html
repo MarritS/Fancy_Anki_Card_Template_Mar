@@ -28,8 +28,8 @@
   ======================================================= -->
   {{#Extra}}
   <div class="common-card">
-    <div class="subtitle">Extra Info</div>
-    <div class="reminder">Hoef je niet te onthouden</div>
+    <div class="subtitle" data-lang="extra_title"></div>
+    <div class="reminder" data-lang="extra_reminder">Hoef je niet te onthouden</div>
 		</br>
     {{Extra}}
   </div>
@@ -42,7 +42,7 @@
   ======================================================= -->
   {{#Hint}}
   <div class="common-card">
-    <div class="subtitle">Ezelsbruggetje</div>
+    <div class="subtitle" data-lang="hint_title"></div>
     {{Hint}}
   </div>
   {{/Hint}}
@@ -54,7 +54,7 @@
   ======================================================= -->
   {{#Source}}
   <div class="common-card">
-    <div class="subtitle">Bron</div>
+    <div class="subtitle" data-lang="source_title"></div>
     {{Source}}
   </div>
   {{/Source}}
@@ -114,5 +114,36 @@
   }
 
   tagContainerEl.appendChild(frag);
+})();
+</script>
+
+<script>
+(() => {
+  // Try to detect preferred language (usually browser/app UI language)
+  const lang =
+    (navigator.languages && navigator.languages[0]) ||
+    navigator.language ||
+    "en";
+
+  const isDutch = /^nl\b/i.test(lang);
+
+  const strings = isDutch
+    ? {
+        extra_title: "Extra info",
+        extra_reminder: "Hoef je niet te onthouden",
+        hint_title: "Ezelsbruggetje",
+        source_title: "Bron",
+      }
+    : {
+        extra_title: "Extra info",
+        extra_reminder: "No need to memorize",
+        hint_title: "Mnemonic",
+        source_title: "Source",
+      };
+
+  document.querySelectorAll("[data-lang]").forEach(el => {
+    const key = el.getAttribute("data-lang");
+    if (strings[key]) el.textContent = strings[key];
+  });
 })();
 </script>
