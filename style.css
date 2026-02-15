@@ -1,33 +1,86 @@
 /* =========================================================
-   ANKI THEME – CLEAN v3 (CARD-ONLY STYLING)
+   ANKI THEME – FINAL REFACTORED SYSTEM
    ---------------------------------------------------------
-   What this stylesheet styles:
-   - Your card content (container, front/back blocks, tags, etc.)
-   - The outer background around the card (to prevent mismatches)
-
-   What it intentionally does NOT style:
-   - Anki’s answer bar (#ansarea)
-   - Anki’s answer buttons (.btn-primary / .btn-secondary)
-   - Generic UI text/table selectors (td, .text-center)
+   Architecture:
+   1) Explicit light/dark color definitions
+   2) Active theme tokens (used by components)
+   3) Minimal Anki shell styling
+   4) Card components only (no UI button styling)
 ========================================================= */
 
 
 /* =========================================================
-   1) DESIGN TOKENS (LIGHT DEFAULT)
+   IMPORT FONT
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+
+/* =========================================================
+   1) THEME COLOR DEFINITIONS (LIGHT + DARK)
 ========================================================= */
 
 :root {
-  /* Colors */
-  --bg-main: #f5f6fa;     /* outside the card */
-  --bg-card: #ffffff;     /* card container */
-  --bg-soft: #e9ecf3;     /* content blocks */
-  --bg-accent: #179ee0;   /* tags */
 
-  --text-main: #0a0e1f;
-  --text-soft: #3a3f55;
-  --text-invert: #ffffff;
+  /* -------------------------
+     LIGHT THEME COLORS
+  ------------------------- */
 
-  /* Typography */
+  --color-bg-card-light: #ffffff;
+  --color-bg-soft-light: #e9ecf3;
+  --color-bg-accent-light: #5e0f0c;
+
+
+  --color-tag-text-light: #ffffff;
+
+
+  /* -------------------------
+     DARK THEME COLORS (PURE BLACK)
+  ------------------------- */
+
+  --color-bg-card-dark: #000000;
+  --color-bg-soft-dark: #222222;
+  --color-bg-accent-dark: #5e0f0c;
+
+  --color-tag-text-dark: #ffffff;
+
+
+  /* =========================================================
+     LIGHT MODE (DEFAULT)
+  ========================================================= */
+
+  --bg-card: var(--color-bg-card-light);
+  --bg-soft: var(--color-bg-soft-light);
+  --bg-accent: var(--color-bg-accent-light);
+
+  --tag-text: var(--color-tag-text-light);
+
+  --deckOptionsCss-TagColor: var(--tag-text);
+
+
+/* =========================================================
+   DARK MODE 
+========================================================= */
+
+.nightMode,
+html.nightMode,
+body.nightMode {
+
+  --bg-card: var(--color-bg-card-dark);
+  --bg-soft: var(--color-bg-soft-dark);
+  --bg-accent: var(--color-bg-accent-dark);
+
+  --tag-text: var(--color-tag-text-dark);
+
+  --deckOptionsCss-TagColor: var(--tag-text);
+}
+
+
+
+  /* -------------------------
+     TYPOGRAPHY
+  ------------------------- */
+
   --font-main: Poppins, Arial, sans-serif;
 
   --fs-front: 24px;
@@ -38,48 +91,29 @@
   --fw-common: 300;
   --fw-strong: 700;
 
-  /* Spacing */
+
+  /* -------------------------
+     SPACING
+  ------------------------- */
+
   --space-1: 8px;
   --space-2: 16px;
   --space-3: 24px;
   --space-4: 32px;
 
-  /* Radius */
+
+  /* -------------------------
+     RADIUS
+  ------------------------- */
+
   --radius-sm: 8px;
   --radius-md: 16px;
-
-  /* Tag text */
-  --tag-text: #ffffff;
-  --deckOptionsCss-TagColor: var(--tag-text);
-}
-
-/* =========================================================
-   DARK MODE (PURE BLACK VERSION)
-========================================================= */
-
-.nightMode,
-html.nightMode,
-body.nightMode {
-  --bg-main: #000000;      /* pure black outer */
-  --bg-card: #000000;      /* no inner blue box */
-  --bg-soft: #111111;      /* slight elevation for content */
-
-  --bg-accent: #179ee0;
-
-  --text-main: #f5f5f5;
-  --text-soft: #cccccc;
-  --text-invert: #000000;
-
-  --tag-text: #ffffff;
-  --deckOptionsCss-TagColor: var(--tag-text);
 }
 
 
+
 /* =========================================================
-   3) BASE + OUTER SHELL BACKGROUND
-   ---------------------------------------------------------
-   We keep this to ensure the space around your card matches
-   your theme in both light and dark mode.
+   3) BASE + MINIMAL ANKI SHELL BACKGROUND
 ========================================================= */
 
 * { box-sizing: border-box; }
@@ -92,75 +126,34 @@ body {
   overflow-x: hidden;
 
   font-family: var(--font-main);
-  color: var(--text-main);
-  background-color: var(--bg-main) !important;
-}
-
-/* Anki outer containers (keep for consistent background) */
-.reviewer,
-#qa,
-#qa_box,
-#reviewer,
-.review {
-  background-color: var(--bg-main) !important;
-  color: var(--text-main);
 }
 
 
 /* =========================================================
-   4) YOUR CARD LAYOUT + COMPONENTS
+   4) CARD LAYOUT + COMPONENTS
 ========================================================= */
 
-/* The wrapper you use in your templates */
 .card-container {
   min-height: 100vh;
   padding: var(--space-4);
   margin-bottom: var(--space-3);
-  background-color: var(--bg-card) !important;
+  background-color: var(--bg-card);
 }
 
-/* Front + common blocks */
-.front-card,
-.common-card {
-  padding: var(--space-2);
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
   margin-bottom: var(--space-3);
-  border-radius: var(--radius-sm);
-
-  background-color: var(--bg-soft) !important;
-  color: var(--text-main);
 }
 
-/* Typography per block */
-.front-card {
-  font-size: var(--fs-front);
-  font-weight: var(--fw-front);
-}
-
-.common-card {
-  font-size: var(--fs-common);
-  font-weight: var(--fw-common);
-}
-
-/* Keep inner content inheriting colors */
-.front-card *,
-.common-card * {
-  color: inherit;
-}
-
-/* Images */
-img {
-  display: block;
-  margin: var(--space-2) auto;
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-md);
-}
-
-/* Tags */
 .tags {
-  padding: calc(var(--space-1) - 0.5px) var(--space-2);
-  margin: var(--space-1);
-  margin-bottom: var(--space-3);
+  padding: 7.5px var(--space-2);
   border-radius: var(--radius-md);
 
   background-color: var(--bg-accent);
@@ -173,11 +166,62 @@ img {
 
 .tags:empty { display: none; }
 
-/* Headers / subtitles */
+
+/* =========================================================
+   CARD BLOCKS
+========================================================= */
+
+.front-card,
+.common-card {
+  padding: var(--space-2);
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-sm);
+
+  background-color: var(--bg-soft) !important;
+  color: var(--text-main);
+}
+
+.front-card {
+  font-size: var(--fs-front);
+  font-weight: var(--fw-front);
+}
+
+.common-card {
+  font-size: var(--fs-common);
+  font-weight: var(--fw-common);
+}
+
+.front-card *,
+.common-card * {
+  color: inherit;
+}
+
+
+/* =========================================================
+   IMAGES
+========================================================= */
+
+img {
+  display: block;
+  margin: var(--space-2) auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+
+/* =========================================================
+   HEADERS / SUBTITLES
+========================================================= */
+
 .front-card h1, .front-card h2, .front-card h3, .front-card h4, .front-card h5, .front-card h6,
 .common-card h1, .common-card h2, .common-card h3, .common-card h4, .common-card h5, .common-card h6,
 .subtitle {
   font-weight: var(--fw-strong);
+}
+
+.reminder {
+	font-style: italic;
 }
 
 .common-card h1 { font-size: 24px; }
@@ -185,7 +229,11 @@ img {
 .common-card h3 { font-size: 20px; }
 .common-card h4 { font-size: 18px; }
 
-/* Lists */
+
+/* =========================================================
+   LISTS
+========================================================= */
+
 .front-card ul, .front-card ol,
 .common-card ul, .common-card ol {
   list-style-position: inside;
