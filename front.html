@@ -1,57 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- =========================================================
+  CARD STRUCTURE
+  -------------------------------------------------------------
+  This is the visible structure of the card.
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Template - nightmode</title>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
-</head>
+  - .card-container wraps everything
+  - .tag-container is where processed tags will be inserted
+  - .front-card displays your {{Front}} field
+========================================================= -->
 
-<body>
-  <div class="card-container">
-
-    <!-- Tag container -->
-
-    <div class="tag-container"></div>
-
-    <!-- Cards -->
-
-    <div class="front-card">{{Front}}</div>
-
+<div class="card-container">
+  <div class="tag-container" id="tagContainer"></div>
+  <div class="front-card">
+    {{Front}}
   </div>
-  <!-- Element used to get the string of tags -->
+</div>
 
-  <span hidden id="tagcontent">{{Tags}}</span>
-  <script>
-    // Get the string of tags, turn it into an array, remove :: and  get last tag in the hierarchy //
-    var importTags = document.getElementById('tagcontent').innerHTML;
-    var currentTags = importTags.split(' ').map(function (tags) {
-      return tags.split('::').pop();
-    });
 
-    // Replace underscores with space //
-    var arrayVariable = currentTags;
+<!-- =========================================================
+  HIDDEN TAG SOURCE
+  -------------------------------------------------------------
+  {{Tags}} is provided by Anki as a single string, e.g.:
 
-    for (var i = 0; i < arrayVariable.length; i++) {
-      arrayVariable[i] = arrayVariable[i].replace(/_/g, ' ');
-    };
+    "Biology::Cells Easy_Tag Another::Subtag"
 
-    // Get the array of tags, create an element for each tag and add it into tag-container //
-    var arrayLength = arrayVariable.length;
-    var temp;
+  We hide it because we don't want to display the raw tag text.
+  We only use it as input for JavaScript processing.
+========================================================= -->
 
-    for (i = 0; i < arrayLength; i++) {
-      temp = document.createElement('div');
-      temp.className = 'tags';
-      temp.innerHTML = arrayVariable[i];
-      document.getElementsByClassName('tag-container')[0].appendChild(temp);
-    };
-  </script>
-</body>
+<span hidden id="tagSource">
+  {{Tags}}
+</span>
 
-</html>
+
+<script>
+/* ============================================================
+   TAG PROCESSING SCRIPT
+   ------------------------------------------------------------
+   What this script does:
+
+   1. Reads the raw tag string from {{Tags}}
+   2. Splits it into individual tags
+   3. Removes hierarchical prefixes (keeps only last part after ::)
+   4. Replaces underscores with spaces
+   5. Creates styled tag elements
+   6. Inserts them into .tag-container
+
+   The entire script is wrapped in an IIFE so variables
+   don't leak into the global scope.
+============================================================ */
+
+(() => {
+
+  // Get references to required elements
+  const tagSourceEl = document.getElementById("tagSource");
+  const tagContainerEl = document.getElementById("tagContainer");
+
+  // Stop if elements are missing (defensive coding)
+  if (!tagSourceEl || !tagContainerEl) return;
+
+  // Read raw tag string safely (textContent avoids HTML issues)
+  const raw = (tagSourceEl.textContent || "").trim();
+
+  // Stop if there are no tags
+  if (!raw) return;
+
+  /* ----------------------------------------------------------
+     PROCESS TAG STRING
+
+     raw example:
+       "Biology::Cells Easy_Tag Another::Subtag"
+
+     Steps:
+       - Split by whitespace
+       - Remove empty entries
+       - Keep last segment after "::"
+       - Replace "_" with " "
+  ---------------------------------------------------------- */
+
+  const tags = raw
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(t => t.split("::").pop())
+    .map(t => t.replace(/_/g, " "));
+
+  /* ----------------------------------------------------------
+     CREATE TAG ELEMENTS
+
+     We use a DocumentFragment as a temporary container.
+     This avoids repeated DOM insertions.
+  ---------------------------------------------------------- */
+
+  const frag = document.createDocumentFragment();
+
+  for (const label of tags) {
+    const el = document.createElement("div");
+    el.className = "tags";
+    el.textContent = label;
+    frag.appendChild(el);
+  }
+
+  // Insert all created tags into the visible container
+  tagContainerEl.appendChild(frag);
+
+})();
+</script>

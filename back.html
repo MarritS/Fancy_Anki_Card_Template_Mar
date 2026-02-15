@@ -1,77 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- =========================================================
+  CARD STRUCTURE (BACK)
+  -------------------------------------------------------------
+  This is the visible layout of the back side:
 
-<head>
- <meta charset="UTF-8">
- <meta http-equiv="X-UA-Compatible" content="IE=edge">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Card Template - nightmode</title>
- <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-</head>
+  - Tag area (filled by JS)
+  - Front shown again
+  - Back answer
+  - Optional sections:
+      Extra (with subtitle + reminder)
+      Hint
+      Source
+========================================================= -->
 
-<body>
- <div class="card-container">
-  <!-- Tag container -->
+<div class="card-container">
 
-  <div class="tag-container"></div>
+  <!-- Tags get injected here -->
+  <div class="tag-container" id="tagContainer"></div>
 
-  <!-- Cards -->
-
+  <!-- Main content -->
   <div class="front-card">{{Front}}</div>
   <div class="common-card">{{Back}}</div>
-{{#Extra}}
+
+  <!-- =======================================================
+    OPTIONAL: EXTRA
+    -----------------------------------------------------------
+    Shown only when the Extra field is not empty.
+  ======================================================= -->
+  {{#Extra}}
   <div class="common-card">
+    <div class="subtitle">Extra Info</div>
+    <div class="reminder">Hoef je niet te onthouden</div>
+    {{Extra}}
+  </div>
+  {{/Extra}}
 
-	<div class="subtitle">Extra Info </div>
-<div class="reminder">Hoef je niet te onthouden</div>
-
-		{{Extra}}</div>
-{{/Extra}}
-
-{{#Hint}}
-<div class="common-card">
-<div class="subtitle">Ezelsbruggetje</div>
-{{Hint}} </div>
-{{/Hint}}
-
-{{#Source}}
+  <!-- =======================================================
+    OPTIONAL: HINT
+    -----------------------------------------------------------
+    Shown only when Hint is not empty.
+  ======================================================= -->
+  {{#Hint}}
   <div class="common-card">
-<div class="subtitle">Bron</div>{{Source}}</div>
-{{/Source}}
+    <div class="subtitle">Ezelsbruggetje</div>
+    {{Hint}}
+  </div>
+  {{/Hint}}
 
- </div>
- <!-- Element used to get the string of tags -->
+  <!-- =======================================================
+    OPTIONAL: SOURCE
+    -----------------------------------------------------------
+    Shown only when Source is not empty.
+  ======================================================= -->
+  {{#Source}}
+  <div class="common-card">
+    <div class="subtitle">Bron</div>
+    {{Source}}
+  </div>
+  {{/Source}}
 
- <span hidden id="tagcontent">{{Tags}}</span>
+</div>
 
- <script>
-  // Get the string of tags, turn it into an array, remove :: and  get last tag in the hierarchy //
-  var importTags = document.getElementById('tagcontent').innerHTML;
-  var currentTags = importTags.split(' ').map(function (tags) {
-   return tags.split('::').pop();
-  });
 
-  // Replace underscores with space //
-  var arrayVariable = currentTags;
+<!-- =========================================================
+  HIDDEN TAG SOURCE
+  -------------------------------------------------------------
+  {{Tags}} comes from Anki as one whitespace-separated string.
+  We keep it hidden and let JS convert it into visible tag pills.
+========================================================= -->
 
-  for (var i = 0; i < arrayVariable.length; i++) {
-   arrayVariable[i] = arrayVariable[i].replace(/_/g, ' ');
-  };
+<span hidden id="tagSource">{{Tags}}</span>
 
-  // Get the array of tags, create an element for each tag and add it into tag-container //
-  var arrayLength = arrayVariable.length;
-  var temp;
 
-  for (i = 0; i < arrayLength; i++) {
-   temp = document.createElement('div');
-   temp.className = 'tags';
-   temp.innerHTML = arrayVariable[i];
-   document.getElementsByClassName('tag-container')[0].appendChild(temp);
-  };
- </script>
-</body>
+<script>
+/* ============================================================
+   TAG PROCESSING SCRIPT (BACK)
+   ------------------------------------------------------------
+   What this script does:
 
-</html>
+   1. Reads the raw tag string from {{Tags}}
+   2. Splits it into individual tags
+   3. Keeps only the last part of hierarchical tags (after ::)
+   4. Replaces underscores with spaces
+   5. Creates <div class="tags"> elements for each tag
+   6. Inserts them into #tagContainer
+
+   Using textContent (instead of innerHTML) prevents any
+   accidental HTML interpretation and is safer.
+============================================================ */
+
+(() => {
+  const tagSourceEl = document.getElementById("tagSource");
+  const tagContainerEl = document.getElementById("tagContainer");
+
+  if (!tagSourceEl || !tagContainerEl) return;
+
+  const raw = (tagSourceEl.textContent || "").trim();
+  if (!raw) return;
+
+  const tags = raw
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(t => t.split("::").pop())
+    .map(t => t.replace(/_/g, " "));
+
+  const frag = document.createDocumentFragment();
+
+  for (const label of tags) {
+    const el = document.createElement("div");
+    el.className = "tags";
+    el.textContent = label;
+    frag.appendChild(el);
+  }
+
+  tagContainerEl.appendChild(frag);
+})();
+</script>
